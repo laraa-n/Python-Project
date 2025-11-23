@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import db, Usuario, Filme
+from models import db, Usuario, Filme, Cliente
 
 app = Flask(__name__)
 app.secret_key = "chave_super_secreta_aqui"
@@ -124,6 +124,55 @@ def filmes_excluir(id_filme):
     db.session.delete(filme)
     db.session.commit()
     return redirect('/filmes')
+
+@app.route('/clientes')
+@login_required
+def clientes_lista():
+    clientes = Cliente.query.all()
+    return render_template("clientes/lista.html", clientes=clientes, title="Clientes")
+
+@app.route('/clientes/adicionar', methods=['GET', 'POST'])
+@login_required
+def clientes_adicionar():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        telefone = request.form['telefone']
+        email = request.form['email']
+
+        novo = Cliente(
+            nome=nome,
+            telefone=telefone,
+            email=email
+        )
+        db.session.add(novo)
+        db.session.commit()
+
+        return redirect('/clientes')
+
+    return render_template("clientes/adicionar.html", title="Adicionar Cliente")
+
+@app.route('/clientes/editar/<int:id_cliente>', methods=['GET', 'POST'])
+@login_required
+def clientes_editar(id_cliente):
+    cliente = Cliente.query.get(id_cliente)
+
+    if request.method == 'POST':
+        cliente.nome = request.form['nome']
+        cliente.telefone = request.form['telefone']
+        cliente.email = request.form['email']
+
+        db.session.commit()
+        return redirect('/clientes')
+
+    return render_template("clientes/editar.html", cliente=cliente, title="Editar Cliente")
+
+@app.route('/clientes/excluir/<int:id_cliente>')
+@login_required
+def clientes_excluir(id_cliente):
+    cliente = Cliente.query.get(id_cliente)
+    db.session.delete(cliente)
+    db.session.commit()
+    return redirect('/clientes')
 
 if __name__ == "__main__":
     app.run(debug=True)
