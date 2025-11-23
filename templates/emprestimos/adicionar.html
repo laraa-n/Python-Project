@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Novo Empréstimo</h2>
+
+<form method="POST" class="card p-4 shadow col-md-6">
+
+    <label>Cliente</label>
+    <select name="id_cliente" class="form-control mb-3" required>
+        <option value="">Selecione</option>
+        {% for c in clientes %}
+        <option value="{{ c.id_cliente }}">{{ c.nome }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Filme</label>
+    <select name="id_filme" class="form-control mb-3" required>
+        <option value="">Selecione</option>
+        {% for f in filmes %}
+        <option value="{{ f.id_filme }}">{{ f.titulo }} ({{ f.quantidade }} disponíveis)</option>
+        {% endfor %}
+    </select>
+
+    <label>Data de Retirada</label>
+    <input type="date" name="data_retirada" class="form-control mb-3" required>
+
+    <label>Data de Devolução</label>
+    <input type="date" name="data_devolucao" class="form-control mb-3" required>
+
+    <button class="btn btn-success">Registrar</button>
+</form>
+
+{% endblock %}

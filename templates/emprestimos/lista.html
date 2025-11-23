@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">Empréstimos</h2>
+
+<a href="/emprestimos/adicionar" class="btn btn-primary mb-3">Novo Empréstimo</a>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Filme</th>
+            <th>Retirada</th>
+            <th>Devolução</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for e in emprestimos %}
+        <tr>
+            <td>{{ e.id_emprestimo }}</td>
+            <td>{{ e.cliente.nome }}</td>
+            <td>{{ e.filme.titulo }}</td>
+            <td>{{ e.data_retirada }}</td>
+            <td>{{ e.data_devolucao }}</td>
+
+            <td>
+                {% if e.devolvido %}
+                    <span class="badge bg-success">Devolvido</span>
+                {% else %}
+                    <span class="badge bg-danger">Pendente</span>
+                {% endif %}
+            </td>
+
+            <td>
+                {% if not e.devolvido %}
+                    <a href="/emprestimos/devolver/{{ e.id_emprestimo }}" class="btn btn-success btn-sm">Devolver</a>
+                {% endif %}
+                <a href="/emprestimos/excluir/{{ e.id_emprestimo }}" class="btn btn-danger btn-sm">Excluir</a>
+            </td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

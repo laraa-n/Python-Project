@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import db, Usuario, Filme, Cliente
+from models import db, Usuario, Filme, Cliente, Emprestimo
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "chave_super_secreta_aqui"
@@ -50,7 +51,7 @@ def login():
 
         if user and check_password_hash(user.senha, senha):
             session['usuario'] = username
-            return redirect('/area-protegida')
+            return redirect('/')
         else:
             return "Usuário ou senha incorretos!"
 
@@ -173,6 +174,72 @@ def clientes_excluir(id_cliente):
     db.session.delete(cliente)
     db.session.commit()
     return redirect('/clientes')
+
+@app.route('/emprestimos')
+@login_required
+def emprestimos_lista():
+    emprestimos = Emprestimo.query.all()
+    return render_template("emprestimos/lista.html", emprestimos=emprestimos, title="Empréstimos")
+
+@app.route('/emprestimos/adicionar', methods=['GET', 'POST'])
+@login_required
+def emprestimos_adicionar():
+    clientes = Cliente.query.all()
+    filmes = Filme.query.filter(Filme.quantidade > 0).all()  # somente filmes disponíveis
+
+    if request.method == 'POST':
+        id_cliente = request.form['id_cliente']
+        id_filme = request.form['id_filme']
+        data_retirada = request.form['data_retirada']
+        data_devolucao = request.form['data_devolucao']
+
+        # Criar empréstimo
+        novo = Emprestimo(
+            id_cliente=id_cliente,
+            id_filme=id_filme,
+            data_retirada=data_retirada,
+            data_devolucao=data_devolucao,
+            devolvido=False
+        )
+
+        # Atualizar estoque
+        filme = Filme.query.get(id_filme)
+        filme.quantidade -= 1
+
+        db.session.add(novo)
+        db.session.commit()
+
+        return redirect('/emprestimos')
+
+    return render_template("emprestimos/adicionar.html", clientes=clientes, filmes=filmes, title="Novo Empréstimo")
+
+@app.route('/emprestimos/devolver/<int:id_emprestimo>')
+@login_required
+def emprestimos_devolver(id_emprestimo):
+    emp = Emprestimo.query.get(id_emprestimo)
+    emp.devolvido = True
+
+    # Atualiza estoque do filme
+    filme = Filme.query.get(emp.id_filme)
+    filme.quantidade += 1
+
+    db.session.commit()
+    return redirect('/emprestimos')
+
+@app.route('/emprestimos/excluir/<int:id_emprestimo>')
+@login_required
+def emprestimos_excluir(id_emprestimo):
+    emp = Emprestimo.query.get(id_emprestimo)
+
+    # Devolver o filme automaticamente se o empréstimo não foi devolvido
+    if not emp.devolvido:
+        filme = Filme.query.get(emp.id_filme)
+        filme.quantidade += 1
+
+    db.session.delete(emp)
+    db.session.commit()
+
+    return redirect('/emprestimos')
 
 if __name__ == "__main__":
     app.run(debug=True)
