@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-center">Login</h2>
+
+<div class="col-md-4 offset-md-4">
+
+    <form method="POST" class="card p-4 shadow">
+        <div class="mb-3">
+            <label>Usuário</label>
+            <input name="username" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Senha</label>
+            <input name="senha" type="password" class="form-control" required>
+        </div>
+
+        <button class="btn btn-primary w-100">Entrar</button>
+    </form>
+
+</div>
+
+{% endblock %}
