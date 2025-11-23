@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Editar Filme</h2>
+
+<form method="POST" class="card p-4 shadow col-md-6">
+
+    <label>Título</label>
+    <input type="text" name="titulo" class="form-control mb-3" value="{{ filme.titulo }}" required>
+
+    <label>Gênero</label>
+    <input type="text" name="genero" class="form-control mb-3" value="{{ filme.genero }}">
+
+    <label>Ano</label>
+    <input type="number" name="ano" class="form-control mb-3" value="{{ filme.ano }}">
+
+    <label>Quantidade</label>
+    <input type="number" name="quantidade" class="form-control mb-3" value="{{ filme.quantidade }}">
+
+    <button class="btn btn-primary">Atualizar</button>
+</form>
+
+{% endblock %}

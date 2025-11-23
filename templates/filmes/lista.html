@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">Filmes</h2>
+
+<a href="/filmes/adicionar" class="btn btn-primary mb-3">Adicionar Filme</a>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Gênero</th>
+            <th>Ano</th>
+            <th>Qtd</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for filme in filmes %}
+        <tr>
+            <td>{{ filme.id_filme }}</td>
+            <td>{{ filme.titulo }}</td>
+            <td>{{ filme.genero }}</td>
+            <td>{{ filme.ano }}</td>
+            <td>{{ filme.quantidade }}</td>
+            <td>
+                <a href="/filmes/editar/{{ filme.id_filme }}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="/filmes/excluir/{{ filme.id_filme }}" class="btn btn-danger btn-sm">Excluir</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
